@@ -1,0 +1,67 @@
+version: '3.8'
+
+services:
+  api:
+    build: ./api
+    ports:
+      - "5050:5000"
+
+  mysql_prod:
+    image: mysql:8
+    container_name: mysql_prod
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: produccion
+    volumes:
+      - ./mysql/init.sql:/docker-entrypoint-initdb.d/init.sql
+    ports:
+      - "3306:3306"
+
+  mysql_dev:
+    image: mysql:8
+    container_name: mysql_dev
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: produccion
+    ports:
+      - "3307:3306"
+
+  mysql_preprod:
+    image: mysql:8
+    container_name: mysql_preprod
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: produccion
+    ports:
+      - "3308:3306"
+
+  mysql_sit:
+    image: mysql:8
+    container_name: mysql_sit
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: produccion
+    ports:
+      - "3309:3306"
+
+  apache:
+    build: ./apache
+    ports:
+      - "8080:80"
+    depends_on:
+      - mysql_prod
+
+  cronjob:
+    build: ./cron
+    depends_on:
+      - api
+      - mysql_prod
+      - mysql_dev
+      - mysql_sit
+
+volumes:
+  prod_data:

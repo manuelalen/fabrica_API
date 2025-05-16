@@ -1,0 +1,2 @@
+* * * * * python3 /scripts/script_insert.py
+0 19 * * * python3 /scripts/script_sync.py
